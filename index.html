@@ -1,0 +1,1215 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Robot Studio</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel='shortcut icon' type='image/x-icon' href='favicon.ico' />
+    <!-- styles -->
+    <link  href="css/bootstrap.min.css" rel="stylesheet"/>
+	<link  href="css/styles.css" rel="stylesheet"/>
+    <link href="css/open-iconic-bootstrap.min.css" rel="stylesheet">
+	
+    <!-- Our Custom CSS -->
+    <link rel="stylesheet" href="style5.css">
+	<link href="css/bootstrap-toggle.min.css" rel="stylesheet">
+	<link href="css/bootstrap-switch.min.css" rel="stylesheet">
+	
+	<script src="js/papaparse.js"></script>
+	<script src="js/Chart.js"></script>
+	<script src="js/chartjs-plugin-zoom.min.js"></script>
+	<script src="js/hammer.min.js"></script>
+
+	<script type="text/javascript" src="js/jquery.js"></script>
+	<script src="js/bootstrap-toggle.min.js"></script>
+	<script type="text/javascript" src="js/three.js"></script>
+	<script type="text/javascript" src="js/TrackballControls.js"></script>
+	<script type="text/javascript" src="js/jquery-3.1.1.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/OrbitControls.js"></script>
+    <script type="text/javascript" src="js/threeDMap.js"></script> 
+	<script src="js/nipplejs.min.js"></script>
+	<script src="js/bootstrap-switch.min.js"></script>
+ 
+  </head>
+
+  <body data-spy="scroll" data-target=".bs-docs-sidebar">
+	<div id="wrapper" style="display:flex; align-items: stretch;height:100%" >
+		<div class="alert alert-success" id="alertWindow"  style = "position:absolute; z-index: 1;right:0;height:100px;width:320px;top:0px;">
+			<button type="button" class="close" data-dismiss="alert">x</button>
+			<strong id="AlertLevel"></strong>
+			<p id="AlertMessage"></p>
+		</div>
+       
+        <!-- Sidebar -->
+        <nav id="sidebar">
+				<div class="sidebar-header">
+                    <h3><img src="img/favicon.ico" style="padding-right:5px"><a>GUI</a></h3>
+                </div>
+				
+                <ul class="list-unstyled components">
+                    <li>
+                        <a href="#connectionSubmenu" data-toggle="collapse" aria-expanded="false" id="login" onclick="hideOther()">
+							<i class="glyphicon glyphicon-home" style="padding-right: 10px;"></i>Login 
+						</a>
+						
+                        <ul class="collapse list-unstyled" id="connectionSubmenu">
+							<div class="input-group add-on">
+							  <input class="form-control" value="ws://10.0.0.10:10000" name="srch-term" id = "domain" type="text">
+							  <div class="input-group-btn">
+								<button class="btn btn-default" type="submit" id="wsConnect">Connect</button>
+							  </div>
+							</div>
+                            
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#" id="parshow" onclick="hideOther()">
+							<i class="glyphicon glyphicon-link" style="padding-right: 10px;"></i>Settings
+						</a>
+                    </li>
+                    <li>
+                        <a href="#pathmenu" data-toggle="collapse" aria-expanded="false" id="pathshow" onclick="hideOther()">
+                            <i class="glyphicon glyphicon-duplicate" style="padding-right: 10px;"></i>Path Correction
+                        </a>
+                        <ul class="collapse list-unstyled" id="pathmenu">
+							<!--<li>
+								<a href="#" id="rawPathDownload">原始路径加载</a>
+								<ul>
+									<div>
+										<button type="button" class="btn btn-default" id="pathUpload" title="机器人端下载原始路径">远程加载</button>
+										<label class="btn btn-default" for="upload" data-toggle="tooltip" data-placement="top" title="本地端上传路径">本地加载<input type='file' id ="upload" onchange="mapUpload(event)" style="display:none"></label>
+									</div>
+		                        </ul>
+							</li>-->
+							<li>
+								<a href="#" id="optimizePath">Path Optimization</a>
+								<ul>
+									<div style="margin: 10px 0px 10px 0px">
+									<table>
+										<tr>
+											<th>Scope:	 </th>
+											<th><input class="form-control" style="width:100px" value="30.0" id = "stepNum" type="text"/></th>
+										</tr>
+										<tr>
+											<th>Angle Thresold: </th>
+											<th><input class="form-control" style="width:100px" value="-0.99" id = "angleThread" type="text"/></th>
+										</tr>
+										<tr>
+											<th>Line Thresold: </th>
+											<th><input class="form-control" style="width:100px" value="0.9" id = "straightThread" type="text"/></th>
+										</tr>
+									</table>
+									</div>
+									<div>
+										<button type="button" class="btn btn-default" id="pathUpload" title="机器人端下载原始路径">Load Original Path</button>
+										<button type="button" class="btn btn-default" id="pathOpt" title="一键优化并显示优化路径" onclick="DoOptimize()">One key Optimize</button>
+										<button type="button" class="btn btn-default" id ="saveOpt">Save Modified Path</button>
+										<!--<button type="button" class="btn btn-default" title="本地端上传路径" id ="uploadOp">本地优化路径<input type='file' id ="uploadOpI"  style="display:none"></button>-->
+									</div>
+		                        </ul>
+							</li>
+							<li>
+								<a href="#" id="PathUpload">Local Path</a>
+								<ul>
+									<div>
+										<label class="btn btn-default" for="upload" data-toggle="tooltip" data-placement="top" title="本地端上传路径">Load Local Path<input type='file' id ="upload" onchange="mapOptUpload(event)" style="display:none"></label>
+									</div>
+		                        </ul>
+							</li>
+							<li>
+								<a href="#" id="PathDownload">Download Path</a>
+								<ul>
+									<div>
+										<button type="button" class="btn btn-default" onclick="downloadFile('path.csv')">Download Optimized Path</button>
+									</div>
+									<div>
+										<button type="button" class="btn btn-default" onclick="downloadFile('rawPathDate.csv')">Download Original Path</button>
+									</div>
+		                        </ul>
+							</li>
+						</ul>
+                    </li>
+					<li>
+						<a href="#statusmenu" data-toggle="collapse" aria-expanded="false" id="statusshow" onclick="hideOther()">
+                            <i class="glyphicon glyphicon-duplicate" style="padding-right: 10px;"></i>Status Monitor
+                        </a>
+						<ul class="collapse list-unstyled" id="statusmenu">
+							<li>
+								<a href="#" id="mapshow" >Load Map Background</a>
+							</li>
+							<li>
+								<a href="#" id="getfile">Load Local Map file<input type='file' id="get" style="display:none"></a>
+							</li>
+							<li>
+								<a href="#" id="getparbutton">Local Map <input type='file' id="getpar" style="display:none"></a>
+							</li>
+							
+							
+							<li>
+								<a>System Switch
+									<input type="checkbox" name="my-checkbox" style="padding-left:40px">	
+								</a>
+							</li>
+							<li>
+								<a>Blade Switch
+									<input type="checkbox" name="blade-checkbox" style="padding-left:40px">	
+								</a>
+							</li>
+							<li>
+								<a>NTrip Switch
+									<input type="checkbox" name="ntrip-checkbox" style="padding-left:40px">	
+								</a>
+							</li>
+                            <li>
+								<div class="row" >
+									<div class="col-sm-12">
+										<div class="btn-group btn-group-justified" role="group" aria-label="Basic example" data-toggle="buttons">
+											<div class="btn-group" role="group">	  
+												<button type="button" class="btn btn-info" href="#autoMenu"  id="switchButton" onclick="switchMode(1)" data-toggle="collapse"  aria-expanded="false" data-parent="#statusmenu"  checked>Auto</button>
+											</div>
+											<div class="btn-group" role="group">
+												<button type="button" class="btn btn-warning" href="#joystickGraph" id="switchButton" onclick="switchMode(2)" data-toggle="collapse" aria-expanded="false" data-parent="#statusmenu">Manual</button>
+											</div>
+										</div>
+									</div>
+								</div>
+							</li>
+							<div>
+								<ul class="collapse list-unstyled" id="autoMenu">
+								<li>
+									<div  class="row"  style="position:relative; margin: 20px 0px 20px 0px;">
+										<div class="col-md-1"></div>
+										<div class="col-md-10">
+											Stauts
+											<input type="checkbox" name="startButton" style="margin-left:40px"></br>
+										</br>
+											<button type="button" class="btn btn-default" id="clearPath" onclick="CleanPoint()">Clear Path</button>
+										</div>
+									</div>
+								</li>
+								</ul>
+							</div>
+							<div>
+								<ul class="collapse list-unstyled" id="joystickGraph">
+								<div id="zone_joystick"  style="height:200px;position:relative">
+								</div>
+									<li>
+										<a>Record Path</a>
+										<div style="text-align: center">
+											<input type="checkbox" name="continueRecode" style="padding-left:40px">
+										</div>
+									</li>
+								</ul>
+							</div>
+                        </ul>	
+                    </li>
+                </ul>
+
+                <ul class="list-unstyled CTAs">
+                    <li><a href="index.html" class="article">Return</a></li>
+                </ul>
+        </nav>
+		<div class="project-resizer project-resizer-vertical" style=" background-color: #666;border-bottom: 1px solid #202020;box-shadow: 0 0 5px rgba(0,0,0,0.4);cursor: col-resize;width: 5px;"></div>
+        <!-- /#sidebar-wrapper -->
+		
+		<div class="navbar-header" style="position:absolute; z-index:1">
+			<button type="button" id="sidebarCollapse" class="navbar-btn">
+				<span></span>
+				<span></span>
+				<span></span>
+			</button>
+        </div>
+		<div id="content-wrapper" style="width:100%" >
+                <div class="line" style="margin: 50px 0px 50px 0px"></div>
+
+                <h2 style="text-align: center">Robot Monitor</h2>
+				<div class="row">
+					<div class="col-md-2"></div>
+					<div class="col-md-8">
+						<p>Feature: Real time panel for robot</p>
+						<p>Version: 1.01</p>
+					</div>
+					<div class="col-md-2"></div>
+				</div>
+                <div class="line"></div>
+				<p id="time" style="text-align: center"></p>
+			 
+		</div>	
+        <!-- /#page-content-wrapper -->
+    </div>
+    <!-- /#wrapper -->
+
+    <script >
+    wsConnect = false;
+	$("#wsConnect").click(function(e) {
+	  var domain = document.getElementById("domain").value;
+	  var target = document.getElementById('ok');
+	  if(wsConnect == true) 
+	  {
+		ws.close();
+		
+		return;
+	  }
+	  ws = new WebSocket(domain);
+	  ws.binaryType = 'arraybuffer';
+		ws.onopen = function(event){
+			 //console.log(event);
+			 //this.send("hello");
+			 showAlert("SUCESS","Connection Established");
+			 $("#wsConnect").text("Connection Close");
+			 wsConnect = true;
+		};
+		ws.onmessage = mapOnMessage;
+		
+		ws.onerror = function(event)
+		{
+			showAlert("ERROR","Connection Timeout");
+		}
+		
+		ws.onclose = function(event)
+		{
+			$("#wsConnect").text("IP Connection");
+			wsConnect = false;
+			showAlert("SUCCESS","Connection Closed");
+		}
+		
+	  //console.log(domain);
+	  //spinner.spin(target);
+	});
+	
+	var $myGroup = $('#statusmenu');
+	$myGroup.on('show.bs.collapse','.collapse', function() {
+		$myGroup.find('.collapse.in').collapse('hide');
+	})
+	
+	document.getElementById('getfile').onclick = function() {
+		document.getElementById('get').click();
+	};
+
+	document.getElementById('getparbutton').onclick = function() {
+		document.getElementById('getpar').click();
+	};
+
+	$('#get').change(function (e) {
+		var filePath = $(this).val();
+		console.log(e.target.files[0]);
+		mapContent.changeGround(e.target.files[0]);
+	});
+
+	$('#getpar').change(function (e) {
+		var filePath = $(this).val();
+		console.log(e.target.files[0]);
+		mapContent.changePar(e.target.files[0]);
+	});
+
+	$.fn.bootstrapSwitch.defaults.inverse = true;
+	$.fn.bootstrapSwitch.defaults.state = false;
+	$.fn.bootstrapSwitch.defaults.size = 'mini';
+	$.fn.bootstrapSwitch.defaults.onColor = 'danger';
+
+	$("[name='my-checkbox']").bootstrapSwitch();
+	$("[name='continueRecode']").bootstrapSwitch();
+	$("[name='startButton']").bootstrapSwitch( {
+			onText: "Start",
+			onColor: 'danger',
+			offColor: 'primary',
+			offText: "Pause",
+			animate: true,
+			size:"normal",
+	});
+	
+	$('input[name="my-checkbox"]').on('switchChange.bootstrapSwitch', function(event, state) {
+	  if(state ==true)
+	  {
+		SystemStart();
+	  }
+	  else
+	  {
+		SystemStop();
+	  }
+	});
+	
+	$('input[name="startButton"]').on('switchChange.bootstrapSwitch', function(event, state) {
+	  if(state ==true)
+	  {
+		onStart();
+	  }
+	  else
+	  {
+		onTempStop();
+	  }
+	});
+
+	$('input[name="continueRecode"]').on('switchChange.bootstrapSwitch', function(event, state) {
+	  if(state ==true)
+	  {
+		doRecord(0);
+	  }
+	  else
+	  {
+		doRecord(1);
+	  }
+	});
+	
+	$("[name='blade-checkbox']").bootstrapSwitch( {
+			onText: "ON",
+			onColor: 'danger',
+			offColor: 'primary',
+			offText: "OFF",
+			animate: true,
+	});
+		
+	$('input[name="blade-checkbox"]').on('switchChange.bootstrapSwitch', function(event, state) {
+	  if(state ==true)
+	  {
+		// console.log("blade on");
+		if(wsConnect == false)return;
+		objectID.ID = 0;
+        objectID.command = "BladeStart";
+        objectID.value = 1;
+        var command = JSON.stringify(objectID);
+        console.log(command);
+        ws.send(command);
+	  }
+	  else
+	  {
+		// console.log("blade off");
+		if(wsConnect == false)return;
+		objectID.ID = 0;
+        objectID.command = "BladeStart";
+        objectID.value = 0;
+        var command = JSON.stringify(objectID);
+        console.log(command);
+        ws.send(command);
+	  }
+	});
+
+	$("[name='ntrip-checkbox']").bootstrapSwitch( {
+			onText: "ON",
+			onColor: 'danger',
+			offColor: 'primary',
+			offText: "OFF",
+			animate: true,
+	});
+		
+	$('input[name="ntrip-checkbox"]').on('switchChange.bootstrapSwitch', function(event, state) {
+	  if(state ==true)
+	  {
+		// console.log("ntrip on");
+		if(wsConnect == false)return;
+		objectID.ID = 0;
+        objectID.command = "NtripStart";
+        objectID.value = 1;
+        var command = JSON.stringify(objectID);
+        console.log(command);
+        ws.send(command);
+	  }
+	  else
+	  {
+		// console.log("blade off");
+		if(wsConnect == false)return;
+		objectID.ID = 0;
+        objectID.command = "NtripStart";
+        objectID.value = 0;
+        var command = JSON.stringify(objectID);
+        console.log(command);
+        ws.send(command);
+	  }
+	});
+
+	function hideOther(idname)
+    {
+    	document.getElementById("connectionSubmenu").setAttribute("aria-expanded", "false");
+    	document.getElementById("connectionSubmenu").setAttribute("class", "list-unstyled collapse");
+    	document.getElementById("pathmenu").setAttribute("aria-expanded", "false");
+    	document.getElementById("pathmenu").setAttribute("class", "list-unstyled collapse");
+    	document.getElementById("statusmenu").setAttribute("aria-expanded", "false");
+    	document.getElementById("statusmenu").setAttribute("class", "list-unstyled collapse");
+    }
+	
+	var objectID = {ID:1 ,command:"null", value:100};
+	function SystemStart()
+	{
+		if(wsConnect == false)return;
+		objectID.ID = 0;
+        objectID.command = "SystemStart";
+        objectID.value = 1;
+        var command = JSON.stringify(objectID);
+        //console.log(command);
+        ws.send(command);
+
+        objectID.ID = -1;
+        objectID.command = "webController";
+        objectID.value = 1;
+        var command = JSON.stringify(objectID);
+        //console.log(command);
+        ws.send(command);
+
+        objectID.ID = -1;
+        objectID.command = "centerController";
+        objectID.value = 1;
+        var command = JSON.stringify(objectID);
+        //console.log(command);
+        ws.send(command);
+		showAlert("INFO","System Start");
+	}
+
+	function SystemStop()
+	{
+		if(wsConnect == false)return;
+		objectID.ID = 0;
+        objectID.command = "SystemStop";
+        objectID.value = 1;
+        var command = JSON.stringify(objectID);
+        //console.log(command);
+        ws.send(command);
+	}
+
+	function DoOptimize()
+    {
+    	// if(wsConnect == false)return;
+    	console.log('Connection detecting in DoOptimize has been commited');
+		var thread=new Array();
+    	thread[0]=document.getElementById("stepNum").value*1.0;
+    	thread[1]=document.getElementById("angleThread").value*1.0;
+    	thread[2]=document.getElementById("straightThread").value*1.0;
+    	objectID.ID = 0;
+        objectID.command = "OptimizePath";
+        objectID.value = thread;
+        var command = JSON.stringify(objectID);
+        //console.log(command);
+        // ws.send(command);
+        console.log('Finish optimization');
+        uploadOptPath();
+    }
+	
+	//joystick.destroy();
+	joystick = nipplejs.create({
+		zone: document.getElementById('zone_joystick'),
+		mode: 'dynamic',
+		position: {left: '50%', top: '50%'},
+		color: 'orange',
+	});
+	
+	joystick.destroy();
+	joystick = nipplejs.create({
+		zone: document.getElementById('zone_joystick'),
+		mode: 'dynamic',
+		position: {left: '50%', top: '50%'},
+		color: 'orange',
+	});
+	joystick.on('start end', function(evt, data) {
+		clearInterval(timeout);
+		manualMove(0, 0);
+		clearInterval(timeout);
+	  }).on('move', function(evt, data) {
+		//console.log(data.angle.degree);
+		clearInterval(timeout);
+		var a=data.distance/50.0;
+		var b=Math.cos(data.angle.degree*2*Math.PI/360);
+		var c;
+		if(data.angle.degree>=0 && data.angle.degree<=180)
+		{
+			c=1.0;
+		}
+		else
+		{
+			c=-1.0;
+		}
+
+		if(a>=0.3);
+		{
+			manualMove(a*c,b);
+		}
+	  }).on('dir:up plain:up dir:left plain:left dir:down ' +
+			'plain:down dir:right plain:right',
+			function(evt, data) {
+		//console.log(data);
+	  });
+	
+	var currentdate = new Date(); 
+	var datetime = currentdate.getDate() + "/"
+                + (currentdate.getMonth()+1)  + "/" 
+                + currentdate.getFullYear() + " @ "  
+                + currentdate.getHours() + ":"  
+                + currentdate.getMinutes() + ":" 
+                + currentdate.getSeconds();
+				
+    var x=document.getElementById("time");	
+	x.innerHTML = datetime;
+	
+	$("#settings").click(function(e) {
+       $.ajax({
+    	type: "GET",
+    	url: "settings/index.html",
+    	dataType: 'html',
+    	//data: {param: id},
+
+    	success: function(html){
+                 $("#content-wrapper").html(html);
+    	},
+
+    	error: function(){
+    	},
+
+    	complete: function(){
+    	}
+    });
+    });
+	
+	var mapContent;
+	
+	var renderer=null;
+	$("#mapshow").click(function(e) {
+       $.ajax({
+    	type: "GET",
+    	url: "settings/map.html",
+    	dataType: 'html',
+    	//data: {param: id},
+
+    	success: function(html){
+                 $("#content-wrapper").html(html);
+				 if(mapContent != null)
+				 {
+					mapContent.destroy();
+					mapContent = null;
+					delete mapContent;
+					//return;
+				 }
+				
+				 mapContent = new threeDMap("threeDMap");
+				 
+				function render()
+				{
+					requestAnimationFrame( render ); 
+					mapContent.controls.update();
+					mapContent.renderer.render( mapContent.scene, mapContent.camera );
+				}
+				render();
+				preloadPath();
+    	},
+
+    	error: function(){
+    	},
+
+    	complete: function(){
+    	}
+    });
+    });
+
+	$("#pathshow").click(function(e) {
+       $.ajax({
+    	type: "GET",
+    	url: "settings/pathOpt.html",
+    	dataType: 'html',
+    	//data: {param: id},
+
+    	success: function(html){
+                 $("#content-wrapper").html(html);
+    	},
+
+    	error: function(){
+    	},
+
+    	complete: function(){
+    	}
+    });
+    });	
+	
+	$("#parshow").click(function(e) {
+       $.ajax({
+    	type: "GET",
+    	url: "settings/parameters.html",
+    	dataType: 'html',
+		scriptCharset: 'utf-8',
+		contentType: "application/x-www-form-urlencoded; charset=utf-8", 
+    	//data: {param: id},
+
+    	success: function(html){
+                 $("#content-wrapper").html(html);
+    	},
+
+    	error: function(){
+    	},
+
+    	complete: function(){
+    	}
+    });
+    });
+
+	function showAlert(level,msg) {
+				$("#AlertLevel").text(level);
+				$("#AlertMessage").text(msg);
+                $("#alertWindow").fadeTo(4000, 500).slideUp(500, function(){
+                $("#alertWindow").slideUp(500);
+                });   
+    }
+	 
+	$("#alertWindow").hide();
+	
+	
+    $("#menu-toggle").click(function(e) {
+        e.preventDefault();
+        $("#wrapper").toggleClass("toggled");
+    });
+    </script>
+	
+	<script>
+
+	var isResizing = false,
+    lastDownX = 0;
+
+		function onEachDot(feature, layer) {
+			layer.on({
+				mouseover: highlightDot,
+				mouseout: resetDotHighlight
+			});
+			}
+	
+	
+		function style(feature) {
+			return {
+				radius: 2,
+				fillColor: '#6068F0',
+				color: "#000",
+				weight: 1,
+				opacity: 0,
+				fillOpacity: 0.8
+			};
+		}
+		
+		
+		function highlightStyle(feature) {
+			return {
+				radius: 3,
+				fillColor: "#102040",
+				color: "#116",
+				weight: 1,
+				opacity: 1,
+				fillOpacity: 0.9
+			};
+		}
+
+		//attach styles and popups to the marker layer
+		function highlightDot(e) {
+			var layer = e.target;
+			dotStyleHighlight = highlightStyle(layer.feature);
+			layer.setStyle(dotStyleHighlight);
+			if (!L.Browser.ie && !L.Browser.opera) {
+				layer.bringToFront();
+			}
+		}
+
+		function resetDotHighlight(e) {
+			var layer = e.target;
+			dotStyleDefault = style(layer.feature);
+			layer.setStyle(dotStyleDefault);
+		}
+	
+</script>
+
+<script >
+	dot = {x:0.0,y:0.0,yaw:0.0};
+	var lastX = 0.0;
+	var lastY = 0.0;
+
+	var object = {command:"null", value:100}
+	var objectID = {ID:1 ,command:"null", value:100}
+
+	// function manualMove(a)
+	// {
+	// 	objectID.ID = 1;
+	// 	objectID.command = "manualMove";
+ //        objectID.value = a;
+ //        var command = JSON.stringify(objectID);
+ //        //console.log(command);
+ //        if(wsConnect == false)return;
+ //        ws.send(command);
+	// }
+
+	var timeout;
+	function manualMove(a, b)
+	{
+        var speed=new Array();
+
+    	speed[0]=a*1.0;
+    	speed[1]=b*1.0;
+
+    	objectID.ID = 1;
+        objectID.command = "manualMove";
+        objectID.value = speed;
+        var command = JSON.stringify(objectID);
+        //console.log(command);
+        if(wsConnect == false)return;
+        ws.send(command);
+
+        timeout=setInterval(function(){
+			objectID.ID = 1;
+			objectID.command = "manualMove";
+	        objectID.value = speed;
+	        var command = JSON.stringify(objectID);
+	        console.log(command);
+	        ws.send(command);
+		},500);	
+	}
+	
+	function onStart()
+    {
+    	objectID.ID = 1;
+        objectID.command = "onStart";
+        objectID.value = 1;
+        var command = JSON.stringify(objectID);
+        //console.log(command);
+		if(wsConnect == false)return;
+        ws.send(command);
+    }
+
+    function onTempStop()
+    {
+    	objectID.ID = 1;
+        objectID.command = "onStop";
+        objectID.value = 0;
+        var command = JSON.stringify(objectID);
+       // console.log(command);
+		if(wsConnect == false)return;
+        ws.send(command);
+    }
+	
+	function switchMode(a)
+	{
+		if(wsConnect == false)return;
+		if(a == 1)
+		{
+			objectID.command = "modeSwitch";//should be auto
+			objectID.value = 0;
+		}
+		else if(a == 2)
+		{
+			objectID.command = "modeSwitch";//should be manual
+			objectID.value = 1;
+		}
+		
+		objectID.ID = 1;
+		var command = JSON.stringify(objectID);
+		console.log(command);
+		ws.send(command);
+	}
+
+	function doRecord(a)
+	{
+		objectID.ID = 1;
+		objectID.command = "doRecord";
+		objectID.value = a;
+		var command = JSON.stringify(objectID);
+		console.log(command);
+		ws.send(command);
+	}
+
+	function UpdatePath()
+	{
+		objectID.ID = 1;
+		objectID.command = "UpdatePath";
+        objectID.value = 1;
+        var command = JSON.stringify(objectID);
+        console.log(command);
+        ws.send(command);
+	}
+
+    function CleanPath()
+    {
+    	objectID.ID = 2;
+        objectID.command = "CleanPath";
+        objectID.value = 1;
+        var command = JSON.stringify(objectID);
+        console.log(command);
+        ws.send(command);
+    }
+
+    function CleanPoint()
+    {
+    	mapContent.clearMap();
+    }
+
+    function AddPoint()
+    {
+    	var point=new Array();
+
+    	point[0]=lastX;
+	    point[1]=lastY;
+
+    	objectID.ID = 2;
+        objectID.command = "AddPoint";
+        objectID.value = point;
+        var command = JSON.stringify(objectID);
+        console.log(command);
+        ws.send(command);
+    }
+
+    function generateZ()
+    {
+    	objectID.ID = 2;
+		objectID.command = "GenerateZPath";
+		objectID.value = 1;
+		var command = JSON.stringify(objectID);
+		console.log(command);
+		ws.send(command);
+    }
+
+    function downloadFile(msg)
+    {
+    	var curWwwPath=window.document.location.href;
+		var pos=curWwwPath.indexOf("#");
+		var localhostPaht=curWwwPath.substring(0,pos);
+    	window.open(localhostPaht+msg);
+    }
+
+	function mapOnMessage(event)
+	{
+		console.log(event.data);
+		var jsonData = JSON.parse(event.data);
+		if(jsonData["command"]=="alert")
+		{
+			var s = jsonData["value"];
+			//window.alert(s);
+			showAlert("INFO",s);
+		}
+		if(jsonData["command"]=="processes")
+		{
+			var object = jsonData["processes"];
+			var p1=document.getElementById("process1");
+			var p2=document.getElementById("process2");
+			var p3=document.getElementById("process3");
+			if(p1!=null&&p2!=null&&p3!=null)
+			{
+				p1.innerHTML =p2.innerHTML;
+				p2.innerHTML =p3.innerHTML;
+				p3.innerHTML =jsonData["value"];
+			}
+		}
+		if(jsonData["command"]=="states")
+		{
+			var object = jsonData["states"];
+			var posX = object["x"];
+			var posY = object["y"];
+			var heading = object["z"];
+			lastX = posX;
+			lastY = posY;
+			var dot={x:posX,y:posY,yaw:heading};
+			if(mapContent != null && mapContent!=undefined)
+	        mapContent.updatePosition(dot);
+
+	    	// var x=document.getElementById("pointx");
+	    	// var y=document.getElementById("pointy");
+
+	    	// x.innerHTML=posX;
+	    	// y.innerHTML=posY;
+		}
+		if(jsonData["command"]=="GPS")
+		{
+			var object = jsonData["GPS"];
+			var posX = object["x"];
+			var posY = object["y"];
+			var mode = object["z"];
+			var x=document.getElementById("pointx");
+			var y=document.getElementById("pointy");
+			var m=document.getElementById("GPSmode");
+			if(x!=null&&y!=null&&m!=null)
+			{
+				if(mode<1.9||mode>3.1)
+				{
+					x.innerHTML=0.0;
+	    			y.innerHTML=0.0;
+	    			m.innerHTML=0;
+				}
+				else
+				{
+					x.innerHTML=posX;
+	    			y.innerHTML=posY;
+	    			m.innerHTML=mode;
+				}
+			}
+		}
+		if(jsonData["command"]=="boundary")
+		{
+			var object = jsonData["value"];
+			//var dots=[];
+			// for (var i = 0; i < object.length; i++) {
+   //  			var point = object[i];
+   //  			console.log(point);
+   //  			dots.push(point);
+			// }
+			var dot={x:posX,y:posY,yaw:heading};
+	        //mapContent.addBoundrary(object);
+
+	        mapContent.removeFirstDotQue();
+			for(var i = 0; i < object.length; i++)
+			{
+				var posX = object[i][0];
+				var posY = object[i][1];
+				var heading = 0.0;
+				if(posX!=null&&posY!=null)
+				{
+					var dot={x:posX,y:posY,yaw:heading};
+					if(mapContent != null && mapContent!=undefined)
+			        mapContent.addDotQue(dot);
+				}
+			}
+			mapContent.drawPathLine(dot);
+
+		}
+		if(jsonData["command"]=="path")
+		{
+			var object = jsonData["path"];
+			var posX = object["x"];
+			var posY = object["y"];
+			var heading = object["yaw"];
+			var dot={x:posX,y:posY,yaw:heading};
+	        mapContent.updatePosition(dot);
+		}
+		if(jsonData["command"]=="planFinish")
+		{
+			reloadMap();
+		}
+
+		if(jsonData["command"]=="clearPoint")
+		{
+			mapContent.clearMap();
+		}
+		if(jsonData["command"]=="toManual")
+		{
+			//
+		}
+		if(jsonData["command"]=="OptimizeFinish")
+		{
+			uploadOptPath();
+		}
+		if(jsonData["command"]=="configData")
+		{
+			var data=jsonData["value"];
+			if(document.getElementById("PID1MAX")!=null)
+			{
+				document.getElementById("PID1MAX").value=data[0];
+		    	document.getElementById("PID1MIN").value=data[1];
+		    	document.getElementById("PID1KP").value=data[2];
+		    	document.getElementById("PID1KI").value=data[3];
+		    	document.getElementById("PID1KD").value=data[4];
+		    	document.getElementById("PID2MAX").value=data[5];
+		    	document.getElementById("PID2MIN").value=data[6];
+		    	document.getElementById("PID2KP").value=data[7];
+		    	document.getElementById("PID2KI").value=data[8];
+		    	document.getElementById("PID2KD").value=data[9];
+		    	document.getElementById("MOTORMAX").value=data[10];
+		    	document.getElementById("MOTORMIN").value=data[11];
+		    	document.getElementById("TURNSPEED").value=data[12];
+		    	document.getElementById("MANUALSPEED").value=data[13];
+		    	document.getElementById("MANUALTURN").value=data[14];
+			}
+		}
+		if(jsonData["command"]=="alarmClear")
+		{
+			var warmi = document.getElementById("warm");
+			var warms = document.getElementById("warmStr");
+			var gps = document.getElementById("gps");
+			var motor = document.getElementById("motor");
+			var imu = document.getElementById("imu");
+			var laser = document.getElementById("laser");
+			var battery =  document.getElementById("battery");
+			if (warmi!=null&&warms!=null)
+			{
+				warmi.src="img/status_ok.png";
+				warms.innerHTML="系统运行正常";
+				gps.src="img/status_ok.png";
+				motor.src="img/status_ok.png";
+				imu.src="img/status_ok.png";
+				laser.src="img/status_ok.png";
+				battery.src="img/status_ok.png";
+			}
+		}
+		if(jsonData["command"]=="alarm")
+		{
+			var v = jsonData["value"];
+			var warmi = document.getElementById("warm");
+			var warms = document.getElementById("warmStr");
+			var gps = document.getElementById("gps");
+			var motor = document.getElementById("motor");
+			var imu = document.getElementById("imu");
+			var laser = document.getElementById("laser");
+			var battery =  document.getElementById("battery");
+			if (warmi!=null&&warms!=null)
+			{
+				warmi.src="img/warming.png";
+				switch(v)
+				{
+					case 101:
+					{
+						warms.innerHTML="GNSS start failed";
+						gps.src="img/status_fail.png";
+						break;
+					}
+					case 102:
+					{
+						warms.innerHTML="IMU start failed";
+						imu.src="img/status_fail.png";
+						break;
+					}
+					case 103:
+					{
+						warms.innerHTML="laser failed";
+						laser.src="img/status_fail.png";
+						break;
+					}
+					case 104:
+					{
+						warms.innerHTML="Motor failed";
+						motor.src="img/status_fail.png";
+						break;
+					}
+					case 105:
+					{
+						warms.innerHTML="battery failed";
+						battery.src="img/status_fail.png";
+						break;
+					}
+					case 106:
+					{
+						warms.innerHTML="config file failed";
+						break;
+					}
+					case 107:
+					{
+						warms.innerHTML="path file failed";
+						break;
+					}
+					case 108:
+					{
+						warms.innerHTML="Alert failed";
+						break;
+					}
+					case 201:
+					{
+						warms.innerHTML="Obstacle in the front";
+						laser.src="img/status_warm.png";
+						break;
+					}
+					case 202:
+					{
+						warms.innerHTML="GNSS signal lost";
+						gps.src="img/status_warm.png";
+						break;
+					}
+					case 203:
+					{
+						warms.innerHTML="battery low";
+						battery.src="img/status_warm.png";
+						break;
+					}
+					case 204:
+					{
+						warms.innerHTML="flipped";
+						imu.src="img/status_warm.png";
+						break;
+					}
+					case 205:
+					{
+						warms.innerHTML="path file lost";
+						break;
+					}
+					case 301:
+					{
+						warms.innerHTML="out of boundary";
+						break;
+					}
+					default:
+					break;
+				}
+			}
+		}
+	}
+
+	function SetIP()
+	{
+		objectID.ID = 0;
+        objectID.command = "SetIP";
+        objectID.value = document.getElementById("robotIP").value+"";
+        var command = JSON.stringify(objectID);
+        console.log(command);
+        ws.send(command);
+	}
+
+	function preloadPath()
+	{
+		var config =
+		{
+			download:true,
+			complete: function(results, file) {
+				mapContent.removeFirstDotQue();
+				for(loop = 0;loop < results.data.length;loop++)
+				{
+					var posX = results.data[loop][0];
+					var posY = results.data[loop][1];
+					var heading = 0.0;
+					if(posX!=null&&posY!=null)
+					{
+						var dot={x:posX,y:posY,yaw:heading};
+						if(mapContent != null && mapContent!=undefined)
+				        mapContent.addDotQue(dot);
+					}
+				}
+				mapContent.drawPathLine(dot);
+			}
+		}
+	    var curWwwPath=window.document.location.href;
+		var pos=curWwwPath.indexOf("#");
+		var localhostPaht=curWwwPath.substring(0,pos); 
+	    Papa.parse(localhostPaht+'map.csv',config);
+	}
+
+	function reloadMap()
+	{
+		mapContent.clearMapLine();
+		var config =
+		{
+			download:true,
+			complete: function(results, file) {
+				mapContent.removeFirstDotQue();
+				for(loop = 0;loop < results.data.length;loop++)
+				{
+					var posX = results.data[loop][0];
+					var posY = results.data[loop][1];
+					var heading = 0.0;
+					if(posX!=null&&posY!=null)
+					{
+						var dot={x:posX,y:posY,yaw:heading};
+						if(mapContent != null && mapContent!=undefined)
+				        mapContent.addDotQue(dot);
+					}
+				}
+				mapContent.drawPathLine(dot);
+			}
+		}
+	    var curWwwPath=window.document.location.href;
+		var pos=curWwwPath.indexOf("#");
+		var localhostPaht=curWwwPath.substring(0,pos);
+	    Papa.parse(localhostPaht+'map.csv',config);
+	}
+	</script>
+	
+	
+	 <script type="text/javascript">
+		 $(document).ready(function () {
+			 $('#sidebarCollapse').on('click', function () {
+				 $('#sidebar').toggleClass('active');
+				 $(this).toggleClass('active');
+			 });
+		 });
+	 </script>
+
+       
+    
+    <!-- javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+  </body>
+</html>
+

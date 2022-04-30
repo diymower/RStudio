@@ -1,0 +1,144 @@
+ 		<div style = "position:absolute; z-index: 1;left:280px;height:320px;width:300px;top:5px;background-color:rgba(32, 32, 32, 0.6);border: 2px solid #383838;border-radius: 5px">
+ 			<div style="margin:10px;height:120px;background-color:rgba(255, 255, 255, 1.0);border: 2px solid white;border-radius: 5px">
+ 				<p id="process1" style="height:33%;padding:2px 0px 0px 5px; margin:0px;font-size: 10px;color:black">1</p>
+ 				<p id="process2" style="height:33%;padding:2px 0px 0px 5px; margin:0px;font-size: 10px;color:black">2</p>
+ 				<p id="process3" style="height:33%;padding:2px 0px 0px 5px; margin:0px;font-size: 10px;color:black">3</p>
+ 			</div>
+		    <div style="margin:20px 0px 10px 30px" class="row">
+			   	<table style="width:250px">
+			   		<tr style="height:50px">
+			   			<th style="width:15%"><img src="img/gps.png" style ="width:24px;height:24px"></th>
+			   			<th style="width:15%"><img src="img/status_ok.png" id="gps" style ="width:24px;height:24px"></th>
+			   			<th style="width:30%"><p id="pointx" style="margin:0px;font-size: 15px;color:white">0</p></th>
+			   			<th style="width:30%"><p id="pointy" style="margin:0px;font-size: 15px;color:white">0</p></th>
+			   			<th style="width:10%"><p id="GPSmode" style="margin:0px;font-size: 15px;color:white">0</p></th>
+			   		</tr>
+			   		<trstyle="height:50px">
+			   			<th><img src="img/battery.png" style ="width:24px;height:24px"></th>
+			   			<th><img src="img/status_ok.png" id="battery" style ="width:24px;height:24px"></th>
+			   			<th><p id="bPercentage" style="margin:0px;font-size: 15px;color:white">0</p></th>
+			   			<th></th>
+			   			<th></th>
+			   		</tr>
+			   	</table>
+			</div>
+			<div style="margin:10px" class="row">
+				<div class="col-md-2 "><img src="img/motor.png" style ="width:24px;height:24px"></div>
+				<div class="col-md-2 "><img src="img/status_ok.png" id="motor" style ="width:24px;height:24px"></div>
+				<div class="col-md-2 "><img src="img/imu.png" style ="width:24px;height:24px"></div>
+				<div class="col-md-2 "><img src="img/status_ok.png" id="imu" style ="width:24px;height:24px"></div>
+				<div class="col-md-2 "><img src="img/laser.png" style ="width:24px;height:24px"></div>
+				<div class="col-md-2 "><img src="img/status_ok.png" id="laser" style ="width:24px;height:24px"></div>
+			</div>
+			<div style="margin:20px 10px 10px 10px" class="row">
+				<div class="col-md-2 "><img src="img/status_ok.png" id="warm" style ="width:30px;height:30px"></div>
+				<p id="warmStr" style="padding: 0px 0px 0px 60px;color:white;">System Running OK</p>
+			</div>
+		</div>
+
+		<div style = "position:absolute; z-index: 1;left:40%;width:460px;height: 50px;bottom:20px">
+            <div class="row-fluid">
+            	<div class="actionButton" id ="confirm" onclick="AddPoint()" ></div><!-- add point -->
+            	<div class="actionButton" id ="moveback" onclick="onGoback()" ></div><!-- to move back mode -->
+                <div class="actionButton" id ="repeat" onclick="onRepeat()" ></div><!-- to repeat mode -->
+                <div class="actionButton" id ="mapIcon" onclick="SaveMap()" ></div><!-- save as map -->
+                <div class="actionButton" id ="obstacleIcon" onclick="AddObstacle()" ></div><!-- save as obstacle -->
+                <div class="actionButton" id ="planner" onclick="onPlanner()"></div><!--generateZ()-->
+				<div class="actionButton" id ="hit" onclick="HitObstacle()"></div><!--generateZ()-->
+				<div class="actionButton" id ="chargepath" onclick="SaveChargePath()"></div><!--Save Charge Path-->				
+            </div>
+        </div>
+		
+        <!-- Page Content -->
+        <div id="threeDMap" style="position:fixed;width:100%; height:100%" >
+           
+        </div>
+
+        <script >
+		function onGoback()
+        {
+        	objectID.ID = 2;
+	        objectID.command = "onGoback";
+	        objectID.value = 1;
+	        var command = JSON.stringify(objectID);
+	        //console.log(command);
+			if(wsConnect == false)return;
+	        ws.send(command);
+	        //save pathStorage as path, and set nevigation as go back
+        }
+
+        function onRepeat()
+        {
+        	objectID.ID = 2;
+	        objectID.command = "onRepeat";
+	        objectID.value = 1;
+	        var command = JSON.stringify(objectID);
+	        //console.log(command);
+			if(wsConnect == false)return;
+	        ws.send(command);
+	        //save pathStorage as path, and set nevigation as loop
+        }
+
+        function SaveMap()
+        {
+        	objectID.ID = 2;
+	        objectID.command = "SaveMap";
+	        objectID.value = 1;
+	        var command = JSON.stringify(objectID);
+	        //console.log(command);
+			if(wsConnect == false)return;
+	        ws.send(command);
+	        //save pathStorage as map
+        }
+
+        function AddObstacle()
+        {
+        	objectID.ID = 2;
+	        objectID.command = "AddObstacle";
+	        objectID.value = 1;
+	        var command = JSON.stringify(objectID);
+	        //console.log(command);
+			if(wsConnect == false)return;
+	        ws.send(command);
+	        //save pathStorage as obstacle
+        }
+
+        function onPlanner()
+        {
+        	objectID.ID = 2;
+	        objectID.command = "onPlanner";
+	        objectID.value = 1;
+	        var command = JSON.stringify(objectID);
+	        //console.log(command);
+			if(wsConnect == false)return;
+	        ws.send(command);
+	        //set nevigation as map clean
+        }
+
+        function HitObstacle()
+        {
+        	objectID.ID = 1;
+	        objectID.command = "HitObstacle";
+	        objectID.value = 1;
+	        var command = JSON.stringify(objectID);
+	        //console.log(command);
+			if(wsConnect == false)return;
+	        ws.send(command);
+	        //set nevigation as map clean
+        }
+
+        function SaveChargePath()
+        {
+        	objectID.ID = 1;
+	        objectID.command = "SaveChargePath";
+	        objectID.value = 1;
+	        var command = JSON.stringify(objectID);
+	        //console.log(command);
+			if(wsConnect == false)return;
+	        ws.send(command);
+	        //set nevigation as map clean
+        }
+        </script>
+
+
+

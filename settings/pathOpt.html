@@ -1,0 +1,412 @@
+		<div id="parmodal" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+			<div class="modal-dialog modal-lg">
+				<div class="modal-content">
+					<div class="row" >
+						<div class="container-fluid">
+							<div class="row" style="background-color: #f8f8f8;margin:0 0 0 0;">
+								<div >
+									<div class="panel-heading" style="background-color:#383838">
+									</div>
+									<div class="panel-body">
+										<div class="row" style="padding-bottom: 20px;" >
+											<div class="col-sm-2" style="padding-top: 7px;">Axis Attribute</div>
+											<div class="col-sm-2">
+												<div class="input-group">
+													<span class="input-group-addon" id="sizing-addon1">x</span>
+													<input type="text" class="form-control" id="pathpointx" value="0" aria-label="0" aria-describedby="sizing-addon1">
+												</div>
+											</div>
+											<div class="col-sm-2">
+												<div class="input-group">
+													<span class="input-group-addon" id="sizing-addon1">y</span>
+													<input type="text" class="form-control" id="pathpointy" value="0.0" aria-label="0" aria-describedby="sizing-addon1">
+												</div>
+											</div>
+											<div class="col-sm-2" style="width:200px">
+												<div class="input-group">
+													<span class="input-group-addon" id="sizing-addon1">stopT</span>
+													<input type="text" class="form-control" id="pathpointstopT" value="0.0" aria-label="0" aria-describedby="sizing-addon1">
+												</div>
+											</div>
+											<div class="col-sm-2">
+												<div class="input-group">
+													<span class="input-group-addon" id="sizing-addon1">type</span>
+													<input type="text" class="form-control" id="pathpointtype" value="0" aria-label="0" aria-describedby="sizing-addon1">
+												</div>
+											</div>
+											<div style="clear:both"></div>
+											<div class="col-sm-2"></div>
+											<div class="col-sm-2">
+												<div class="input-group">
+													<span class="input-group-addon" id="sizing-addon1">index</span>
+													<input type="text" class="form-control" id="pathindex" value="0" aria-label="0" aria-describedby="sizing-addon1">
+												</div>
+											</div>
+										</div>
+
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal" id="deletePointes">delete</button>	
+						<button type="button" class="btn btn-secondary" data-dismiss="modal" id="savePointes">Save</button>
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+					</div>
+				</div>
+
+			</div>
+			
+		</div>
+		<canvas id="myChart" style="height:100%;width:100%" ></canvas>
+
+		
+
+		<script >	
+
+
+
+var pathArray = new Array();
+var ctx = document.getElementById("myChart").getContext('2d');
+var scatterChart=null;
+scatterChart = new Chart(ctx, {
+	type: 'scatter',
+	data: {
+		datasets: [{
+			label: 'Optimized Path',
+			borderColor: 'rgb(54, 162, 235)',
+			backgroundColor: 'rgba(54, 162, 235,0.2)',
+			data: []
+		},{
+			label: 'Original Path',
+			borderColor: 'rgb(255, 99, 132)',
+			backgroundColor: 'rgba(255, 99, 132,0.2)',
+			data: []
+		}
+		]
+	},
+	options: {
+		events: ['click','mouseout',"mousemove"],
+		onClick:function(e)
+		{
+			var activePoints = scatterChart.getElementsAtEvent(e);
+			if(activePoints.length>0&&activePoints[0]._datasetIndex==0)
+			{
+				var index = activePoints[0]._index;
+				$('#pathpointx').val(scatterChart.data.datasets[0].data[index].x);
+				$('#pathpointy').val(scatterChart.data.datasets[0].data[index].y);
+				$('#pathpointstopT').val(pathArray[index][2]);
+				$('#pathpointtype').val(pathArray[index][3]);
+				$('#pathindex').val(index);
+				$('#parmodal').modal('show');
+			}
+		},
+		
+		scales: {
+			xAxes: [{
+				position: "bottom",
+				gridLines: {
+					zeroLineColor: "rgba(0,0,0,1)"
+				}
+			}],
+			yAxes: [{
+						type: "linear", // only linear but allow scale type registration. This allows extensions to exist solely for log scale for instance
+						display: true,
+						position: "left",
+						id: "y-axis-1",
+					}, {
+						type: "linear", // only linear but allow scale type registration. This allows extensions to exist solely for log scale for instance
+						display: true,
+						position: "right",
+						reverse: true,
+						id: "y-axis-2",
+
+						// grid line settings
+						gridLines: {
+							drawOnChartArea: false, // only want the grid lines for one axis to show up
+						},
+					}],
+				},
+        // Container for pan options
+        pan: {
+            // Boolean to enable panning
+            enabled: true,
+
+            // Panning directions. Remove the appropriate direction to disable 
+            // Eg. 'y' would only allow panning in the y direction
+            mode: 'xy'
+        },
+
+        // Container for zoom options
+        zoom: {
+            // Boolean to enable zooming
+            enabled: true,
+
+
+            // Zooming directions. Remove the appropriate direction to disable 
+            // Eg. 'y' would only allow zooming in the y direction
+            mode: 'xy',
+        }
+    }
+});
+
+function convertArrayOfObjectsToCSV(args) {
+	var result, ctr, keys, columnDelimiter, lineDelimiter, data;
+
+	data = args.data || null;
+
+	if (data == null || !data.length) {
+		return null;
+	}
+
+	columnDelimiter = args.columnDelimiter || ',';
+	lineDelimiter = args.lineDelimiter || '\n';
+
+	keys = Object.keys(data[0]);
+
+	result = '';
+	result += keys.join(columnDelimiter);
+	result += lineDelimiter;
+
+	data.forEach(function(item) {
+		ctr = 0;
+		keys.forEach(function(key) {
+			if (ctr > 0) result += columnDelimiter;
+
+			result += item[key];
+			ctr++;
+		});
+		result += lineDelimiter;
+	});
+
+	return result;
+}
+
+$("#deletePointes").click(function(event) {
+	var index = $('#pathindex').val();
+	if(index<0)return;
+	scatterChart.data.datasets[0].data.splice(index,1);
+	pathArray.splice(index,1);
+	scatterChart.update();
+});
+
+$("#savePointes").click(function(event) {
+	var index = $('#pathindex').val();
+	if(index<0)return;
+	scatterChart.data.datasets[0].data[index].x = $('#pathpointx').val();
+	scatterChart.data.datasets[0].data[index].y = $('#pathpointy').val();
+
+	pathArray[index][0] = $('#pathpointx').val()*1.0;
+	pathArray[index][1] = $('#pathpointy').val()*1.0;
+	pathArray[index][2] = $('#pathpointstopT').val()*1.0;
+	pathArray[index][3] = $('#pathpointtype').val()*1.0;
+
+	scatterChart.update();
+});
+
+$("#saveOpt").click(function(event) {
+	var x;
+	var y;
+	var stopT;
+	var type;
+	var cnt = 0;
+	var len = scatterChart.data.datasets[0].data.length;
+	var point=new Array();
+	objectID.ID = 2;
+	objectID.command = "AddOptPoint";
+	for(var i=0; i<len; i++)
+	{
+		// console.log(x,y,stopT,type);
+		// x=scatterChart.data.datasets[0].data[i].x;
+		// y=scatterChart.data.datasets[0].data[i].y;
+		x=pathArray[i][0];
+		y=pathArray[i][1];
+		stopT=pathArray[i][2];
+		type=pathArray[i][3];
+
+		point[0+4*cnt]=x*1.0;
+		point[1+4*cnt]=y*1.0;
+		point[2+4*cnt]=stopT*1.0;
+		point[3+4*cnt]=type*1.0;
+		cnt++;
+		if(cnt==100)
+		{
+			objectID.value = point;
+			var command = JSON.stringify(objectID);
+			console.log(command);
+			ws.send(command);
+			cnt=0;
+		}
+		// AddOptPoint(x,y,stopT,type);		
+	}
+	if(cnt>0)
+	{
+		var value_last = point.slice(0,4*(cnt-1));
+		objectID.value = value_last;
+		var command = JSON.stringify(objectID);
+		console.log(command);
+		ws.send(command);
+	}
+	//AddOptPoint(x,y,stopT,type);
+	// SavePath();
+});
+
+function AddOptPoint(x,y,stop,type)
+{
+	var point=new Array();
+	point[0]=x*1.0;
+	point[1]=y*1.0;
+	point[2]=stop*1.0;
+	point[3]=type*1.0;
+
+	if(null==x||null==y||null==stop||null==type)
+	{
+		return;
+	}
+	objectID.ID = 2;
+	objectID.command = "AddOptPoint";
+	objectID.value = point;
+	var command = JSON.stringify(objectID);
+	console.log(command);
+	ws.send(command);
+}
+
+function uploadOptPath(){
+	var config =
+	{
+		download:true,
+		complete: function(results, file) {
+			scatterChart.data.datasets[0].data = [];
+			pathArray = new Array();
+			for(loop = 0;loop < results.data.length;loop++)
+			{
+				
+				var pos = {x:parseFloat(results.data[loop][0]) ,y:parseFloat(results.data[loop][1])};
+				//console.log(pos);
+				scatterChart.data.datasets[0].data.push(pos);
+				pathArray[loop]= new Array();
+				pathArray[loop][0]=results.data[loop][0];//x
+				pathArray[loop][1]=results.data[loop][1];//y
+				pathArray[loop][2]=results.data[loop][3];//stop
+				pathArray[loop][3]=results.data[loop][4];//type
+			}
+			scatterChart.update();
+		}
+	}
+	var input = event.target;
+	var curWwwPath=window.document.location.href;
+	var pos=curWwwPath.indexOf("#");
+	var localhostPaht=curWwwPath.substring(0,pos); 
+	Papa.parse(localhostPaht+'path.csv',config);
+};
+
+
+$("#downloadOptPath").click(function(event) {
+	var data, filename, link;
+	var csv = convertArrayOfObjectsToCSV({
+		data: scatterChart.data.datasets[0].data
+	});
+	if (csv == null) return;
+	filename = 'path.csv';
+	if (!csv.match(/^data:text\/csv/i)) {
+		csv = 'data:text/csv;charset=utf-8,' + csv;
+	}
+	data = encodeURI(csv);
+	link = document.createElement('a');
+	link.setAttribute('href', data);
+	link.setAttribute('download', filename);
+	link.click();
+	
+});
+
+$("#pathUpload").click(function() {
+	var config =
+	{
+		download:true,
+		complete: function(results, file) {
+			scatterChart.data.datasets[1].data = [];
+			for(loop = 0;loop < results.data.length;loop++)
+			{
+				
+				var pos = {x:parseFloat(results.data[loop][0]) ,y:parseFloat(results.data[loop][1])};
+				//console.log(pos);
+				scatterChart.data.datasets[1].data.push(pos);
+			}
+			scatterChart.update();
+		}
+	}
+	var curWwwPath=window.document.location.href;
+	var pos=curWwwPath.indexOf("#");
+	var localhostPaht=curWwwPath.substring(0,pos); 
+	Papa.parse(localhostPaht+'rawPathDate.csv',config);
+});
+
+// function mapOptUpload(event) {
+// 	var config =
+// 	{
+// 		complete: function(results, file) {
+// 			scatterChart.data.datasets[0].data = [];
+// 			for(loop = 0;loop < results.data.length;loop++)
+// 			{
+
+// 				var pos = {x:parseFloat(results.data[loop][0]) ,y:parseFloat(results.data[loop][1]),attr:'0'};
+// 				//console.log(pos);
+// 				scatterChart.data.datasets[0].data.push(pos);
+// 			}
+// 			scatterChart.update();
+// 		}
+// 	}
+//     var input = event.target;
+//     Papa.parse(input.files[0],config);
+// };
+
+function mapOptUpload(event) {
+	var config =
+	{
+		complete: function(results, file) {
+			scatterChart.data.datasets[0].data = [];
+			pathArray = new Array();
+			for(loop = 0;loop < results.data.length;loop++)
+			{
+				if(results.data[loop][0]!=null&&results.data[loop][1]!=null)
+				{
+					var pos = {x:parseFloat(results.data[loop][0]) ,y:parseFloat(results.data[loop][1]),attr:'0'};
+					//console.log(pos);
+					scatterChart.data.datasets[0].data.push(pos);
+					pathArray[loop]= new Array();
+					pathArray[loop][0]=results.data[loop][0];//x
+					pathArray[loop][1]=results.data[loop][1];//y
+					pathArray[loop][2]=results.data[loop][3];//stop
+					pathArray[loop][3]=results.data[loop][4];//type
+				}
+			}
+			scatterChart.update();
+		}
+	}
+	var input = event.target;
+	Papa.parse(input.files[0],config);
+};
+
+function mapUpload(event){
+	var config =
+	{
+		complete: function(results, file) {
+			scatterChart.data.datasets[1].data = [];
+			for(loop = 0;loop < results.data.length;loop++)
+			{
+				if(results.data[loop][0]!=null&&results.data[loop][1]!=null)
+				{
+					var pos = {x:parseFloat(results.data[loop][0]) ,y:parseFloat(results.data[loop][1]),attr:'0'};
+					//console.log(pos);
+					scatterChart.data.datasets[1].data.push(pos);
+				}
+			}
+			scatterChart.update();
+		}
+	}
+	var input = event.target;
+	Papa.parse(input.files[0],config);
+}
+
+</script>

@@ -1,0 +1,274 @@
+body {
+	overflow: hidden;
+}
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+.footer ul {
+	width: 100%;
+}
+.footer #country-name {
+	padding: 10px 20px 10px;
+	font-size: 20px;
+	font-weight: 200;
+	color: #777;
+	text-shadow: 0 1px 0 #fff;
+	text-align: center;
+	width: 100%;
+}
+
+
+.mini-submenu{
+  display:inline-block;  
+  background-color: rgba(0, 0, 0, 0);  
+  border: 1px solid rgba(0, 0, 0, 0.9);
+  border-radius: 4px;
+  padding: 9px;  
+  /*position: relative;*/
+  width: 42px;
+
+}
+
+.mini-submenu:hover{
+  cursor: pointer;
+}
+
+.mini-submenu .icon-bar {
+  border-radius: 1px;
+  display: block;
+  height: 2px;
+  width: 22px;
+  margin-top: 3px;
+}
+
+.mini-submenu .icon-bar {
+  background-color: #000;
+}
+
+.list-group{
+	display:none;
+}
+
+#slide-submenu{
+  background: rgba(0, 0, 0, 0.45);
+  display: inline-block;
+  padding: 0 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  position:absolute;
+}
+
+#map
+{
+	position:absolute;
+	height:100%;
+	width:100%;
+}
+
+@media(min-width:768px)
+{
+.main{
+	padding-right:40px;
+	padding-left:40px;
+}
+}
+
+.main{
+	padding: 20px;
+} 
+
+
+#arrow
+{
+	background:url(../img/lue.png) 0 0 no-repeat;
+	height:170px;
+	right:0px;
+	position:absolute;
+	top:40%;
+	width:15px;
+	z-index:1000;
+}
+
+#arrow:hover
+{
+	background:url(../img/lue2.png) 0 0 no-repeat;
+}
+
+.gpsicon
+{
+   background-image: url('../img/gps.png') ;
+   height:36px;
+   width:36px;
+}
+
+#show-threeDMap{
+  display:none;
+  position:fixed;
+  right: 0px;top:50%;
+  margin-top:-82px;
+  width:10px;height:85px;
+  background: rgb(0,0,0);
+  z-index: 1;
+}
+#show-threeDMap:hover{
+  background: rgba(0,0,0,0.45);
+}
+
+#info.hover
+{
+   font-size:50px;
+}
+
+.actionButton
+{
+  display: inline-block;
+  height: 48px;
+  width: 48px;
+  border:0;
+  cursor:pointer;
+  margin-bottom: 0px;
+ /* padding-bottom:  2em;     
+  margin-bottom: -2em;*/
+
+}
+
+#moveTo
+{
+  
+  background-image: url('../img/moveTo.png') ;
+}
+
+#moveTo:hover
+{
+  background-image: url('../img/moveToD.png');
+
+}
+
+#start
+{
+  background-image: url('../img/start.png') ;
+}
+#foreward
+{
+  background-image: url('../img/foreward.png') ;
+}
+#left
+{
+  background-image: url('../img/left.png') ;
+}
+#right
+{
+  background-image: url('../img/start.png') ;
+}
+#back
+{
+  background-image: url('../img/back.png') ;
+}
+#stop
+{
+  background-image: url('../img/stop.png') ;
+}
+#stop:hover
+{
+  background-image: url('../img/stopD.png') ;
+}
+
+#start:hover
+{
+  background-image: url('../img/startD.png') ;
+}
+
+#foreward:hover
+{
+  background-image: url('../img/forewardD.png') ;
+}
+#left:hover
+{
+  background-image: url('../img/leftD.png') ;
+}
+#right:hover
+{
+  background-image: url('../img/startD.png') ;
+}
+#back:hover
+{
+  background-image: url('../img/backD.png') ;
+}
+
+#confirm
+{
+  background-image: url('../img/confirm.png') ;
+}
+#confirm:hover
+{
+  background-image: url('../img/confirmD.png') ;
+}
+
+#moveback
+{
+  background-image: url('../img/reverse.png') ;
+}
+
+#moveback:hover
+{
+  background-image: url('../img/reverseD.png');
+}
+
+#repeat
+{
+   background-image: url('../img/loop.png') ;
+}
+
+#repeat:hover
+{
+   background: url('../img/loopD.png') ;
+}
+
+#mapIcon
+{
+  background-image: url('../img/map.png') ;
+}
+
+#mapIcon:hover
+{
+  background-image: url('../img/mapD.png');
+}
+
+#obstacleIcon
+{
+  background-image: url('../img/obstacle.png') ;
+}
+
+#obstacleIcon:hover
+{
+  background-image: url('../img/obstacleD.png');
+}
+
+#planner
+{
+  background-image: url('../img/planner.png') ;
+}
+#planner:hover
+{
+  background-image: url('../img/plannerD.png') ;
+}
+
+#hit
+{
+  background-image: url('../img/hit.png') ;
+}
+#hit:hover
+{
+  background-image: url('../img/hitD.png') ;
+}
+
+#chargepath
+{
+  background-image: url('../img/moveTo.png') ;
+}
+#chargepath:hover
+{
+  background-image: url('../img/moveToD.png') ;
+}
